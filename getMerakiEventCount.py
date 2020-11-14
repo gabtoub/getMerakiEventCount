@@ -7,6 +7,8 @@ import os
 import sys
 import datetime
 
+span = 1
+
 
 def getorganisations(apikey):
     session = meraki.DashboardAPI(api_key=apikey, print_console=False, output_log=False, suppress_logging=True)
@@ -36,16 +38,26 @@ def main():
     var_parser.add_argument("--key", help="Set up Meraki API Key or set into env var", type=str, required=False)
     var_parser.add_argument("--org", help="Set Org ID", type=str, required=False)
     var_parser.add_argument("--net", help="Set Network ID", type=str, required=False)
-    var_parser.add_argument("--span", help="Set number of days", type=int, required=True)
+    var_parser.add_argument("--span", help="Set Number of days", type=int, required=False)
     var_parser.add_argument("--type", help="Set Event Type", type=str, required=False)
-    var_parser.add_argument("--product", help="Set Product", type=str, required=False)
+    var_parser.add_argument("--product", help="Set Product", type=str, required=True)
 
-    # set parsed arguments in variables
+    # Set parsed arguments in variables
     variables = var_parser.parse_args()
     org = variables.org
     net = variables.net
     span = variables.span
-    type = variables.type
+    eventtype = variables.type
+    prod = variables.product
+    #timestamp
+    timenow = datetime.datetime.now()
+    if not span:
+        timedelta = timenow - datetime.timedelta(days=1)
+        print("Using default timespan : 1 day")
+    else:
+        timedelta = timenow - datetime.timedelta(days=span)
+
+    timestamp = timedelta.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     if variables.key:
         apikey = variables.key
@@ -53,34 +65,31 @@ def main():
         try:
             apikey = (os.environ["MERAKI_APIKEY"])
         except:
-            print("API Key error - Please set in Env variables or in arguments")
+            print("API Key missing - Please set in Env variables or in arguments")
             sys.exit()
 
-    organ = getorganisations(apikey)
     if not org:
-        print("Error : Please set Org ID in parameters")
+        organ = getorganisations(apikey)
+        print("Please set Org ID in parameters - available organizations : ")
+        for each in organ:
+            # display available Org IDs
+            print(f"Organization : {each.get('id')}, Name : {each.get('name')}")
+
     else:
         if net:
-            timenow = datetime.datetime.now()
-            timedelta = timenow - datetime.timedelta(days=span)
-            timestamp = timedelta.strftime("%Y-%m-%dT%H:%M:%SZ")
-            product = "wireless"
-            event_type = "dfs_event"
+            product = prod
+            event_type = type
             event_count = getnbevents(apikey, net, product, event_type, timestamp)
             print(f"Network : {net} , Number of {event_type} : {event_count}")
 
         else:
             networks = getnetworks(apikey, org)
-            timenow = datetime.datetime.now()
-            timedelta = timenow - datetime.timedelta(days=span)
-            timestamp = timedelta.strftime("%Y-%m-%dT%H:%M:%SZ")
             print(f"Timespan : between {timedelta} and {timenow}")
             for each in networks:
-                ti = 0
                 netID = each.get('id')
                 netname = each.get('name')
-                product = "wireless"
-                event_type = "dfs_event"
+                product = prod
+                event_type = eventtype
                 event_count = getnbevents(apikey, netID, product, event_type, timestamp)
                 print(f"Network : {netname} , Number of {event_type} : {event_count}")
 
