@@ -36,7 +36,7 @@ def main():
     var_parser.add_argument("--key", help="Set up Meraki API Key or set into env var", type=str, required=False)
     var_parser.add_argument("--org", help="Set Org ID", type=str, required=False)
     var_parser.add_argument("--net", help="Set Network ID", type=str, required=False)
-    var_parser.add_argument("--time", help="Set Timespan", type=str, required=False)
+    var_parser.add_argument("--span", help="Set number of days", type=int, required=True)
     var_parser.add_argument("--type", help="Set Event Type", type=str, required=False)
     var_parser.add_argument("--product", help="Set Product", type=str, required=False)
 
@@ -44,7 +44,7 @@ def main():
     variables = var_parser.parse_args()
     org = variables.org
     net = variables.net
-    span = variables.time
+    span = variables.span
     type = variables.type
 
     if variables.key:
@@ -58,11 +58,11 @@ def main():
 
     organ = getorganisations(apikey)
     if not org:
-        print("\n Please set Org ID in parameters \n")
+        print("Error : Please set Org ID in parameters")
     else:
         if net:
             timenow = datetime.datetime.now()
-            timedelta = timenow - datetime.timedelta(days=1)
+            timedelta = timenow - datetime.timedelta(days=span)
             timestamp = timedelta.strftime("%Y-%m-%dT%H:%M:%SZ")
             product = "wireless"
             event_type = "dfs_event"
@@ -72,7 +72,7 @@ def main():
         else:
             networks = getnetworks(apikey, org)
             timenow = datetime.datetime.now()
-            timedelta = timenow - datetime.timedelta(days=1)
+            timedelta = timenow - datetime.timedelta(days=span)
             timestamp = timedelta.strftime("%Y-%m-%dT%H:%M:%SZ")
             print(f"Timespan : between {timedelta} and {timenow}")
             for each in networks:
