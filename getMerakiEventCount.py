@@ -7,8 +7,6 @@ import os
 import sys
 import datetime
 
-span = 1
-
 
 def getorganisations(apikey):
     session = meraki.DashboardAPI(api_key=apikey, print_console=False, output_log=False, suppress_logging=True)
