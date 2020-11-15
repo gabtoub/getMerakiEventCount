@@ -33,12 +33,12 @@ def getnbevents(apikey, netID, product, event_type, timestamp):
 def main():
     # set arguments
     var_parser = argparse.ArgumentParser()
-    var_parser.add_argument("--key", help="Set up Meraki API Key or set into env var", type=str, required=False)
-    var_parser.add_argument("--org", help="Set Org ID", type=str, required=False)
-    var_parser.add_argument("--net", help="Set Network ID", type=str, required=False)
-    var_parser.add_argument("--span", help="Set Number of days", type=int, required=False)
-    var_parser.add_argument("--type", help="Set Event Type", type=str, required=False)
-    var_parser.add_argument("--product", help="Set Product", type=str, required=True)
+    var_parser.add_argument("-k", "--key", help="Set up Meraki API Key or set into Env variable", type=str, required=False)
+    var_parser.add_argument("-o", "--org", help="Set Org ID", type=str, required=False)
+    var_parser.add_argument("-n", "--net", help="Set Network ID", type=str, required=False)
+    var_parser.add_argument("-s", "--span", help="Set Timespan in days", type=int, required=False)
+    var_parser.add_argument("-t", "--type", help="Set Event Type", type=str, required=False)
+    var_parser.add_argument("-p", "--product", help="Set Product", type=str, required=True)
 
     # Set parsed arguments in variables
     variables = var_parser.parse_args()
@@ -47,7 +47,7 @@ def main():
     span = variables.span
     eventtype = variables.type
     prod = variables.product
-    #timestamp
+    # Timestamp generation
     timenow = datetime.datetime.now()
     if not span:
         timedelta = timenow - datetime.timedelta(days=1)
@@ -63,32 +63,36 @@ def main():
         try:
             apikey = (os.environ["MERAKI_APIKEY"])
         except:
-            print("API Key missing - Please set in Env variables or in arguments")
+            print("API Key missing - Please set in Env variables or in Arguments")
             sys.exit()
 
     if not org:
+        # Display all organizations
         organ = getorganisations(apikey)
         print("Please set Org ID in parameters - available organizations : ")
         for each in organ:
             # display available Org IDs
             print(f"Organization : {each.get('id')}, Name : {each.get('name')}")
+        sys.exit()
 
     else:
         if net:
+            # Parsing one network only
             product = prod
             event_type = type
             event_count = getnbevents(apikey, net, product, event_type, timestamp)
             print(f"Network : {net} , Number of {event_type} : {event_count}")
 
         else:
+            # Parsing all networks if no network ID set
             networks = getnetworks(apikey, org)
             print(f"Timespan : between {timedelta} and {timenow}")
             for each in networks:
-                netID = each.get('id')
+                netid = each.get('id')
                 netname = each.get('name')
                 product = prod
                 event_type = eventtype
-                event_count = getnbevents(apikey, netID, product, event_type, timestamp)
+                event_count = getnbevents(apikey, netid, product, event_type, timestamp)
                 print(f"Network : {netname} , Number of {event_type} : {event_count}")
 
 
