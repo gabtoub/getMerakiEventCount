@@ -10,28 +10,32 @@ import meraki
 
 
 def session(apikey):
+    # Open a session to Meraki Dashboard
     s = meraki.DashboardAPI(api_key=apikey, print_console=False, output_log=False, suppress_logging=True)
     return s
 
 
 def getorganisations(s):
+    # Get all organizations available
     org = s.organizations.getOrganizations()
     return org
 
 
 def getnetworks(s, org):
+    # Get all networks available in a specified organization
     net = s.organizations.getOrganizationNetworks(organizationId=org)
     return net
 
 
 def getnbevents(s, netID, product, event_type, timestamp):
+    # Events counter - using Event Log getNetworkEvents Request
     log = s.networks.getNetworkEvents(networkId=netID, productType=product, includedEventTypes=event_type,
                                       startingAfter=timestamp, perPage="1000")
     return len(log['events'])
 
 
 def main():
-    # set arguments
+    # Set arguments
     var_parser = argparse.ArgumentParser()
     var_parser.add_argument("-k", "--key", help="Set up Meraki API Key or set into Env variable", type=str,
                             required=False)
@@ -57,7 +61,7 @@ def main():
         print("Could not parse arguments")
         var_parser.print_help()
         return
-    # Timestamp generation
+    # Timestamp generation for usage in API requests
     timenow = datetime.datetime.now()
     timedelta = timenow - datetime.timedelta(days=span)
     timestamp = timedelta.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -79,8 +83,8 @@ def main():
         return
 
     if not org:
-        # Display all organizations
-        try :
+        # If no Org ID provided, display all organizations
+        try:
             organ = getorganisations(s)
         except meraki.APIError:
             print("API Error - check arguments")
@@ -90,16 +94,16 @@ def main():
             return
         print("Please set Org ID in parameters - available organizations : ")
         for each in organ:
-            # display available Org IDs
+            # Display available Org IDs
             print(f"Organization : {each.get('id')}, Name : {each.get('name')}")
         sys.exit()
 
     else:
         if net:
-            # Parsing one network only
+            # Parsing one network only if a network ID is set
             product = prod
             event_type = type
-            try :
+            try:
                 event_count = getnbevents(s, net, product, event_type, timestamp)
                 print(f"Network : {net} , Number of {event_type} : {event_count}")
             except meraki.APIError:
@@ -129,4 +133,3 @@ def main():
 
 
 main()
-
