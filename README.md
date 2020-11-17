@@ -8,7 +8,7 @@ Displays count of an event type from Meraki Dashboard  on a defined time frame
 
 ## How to Use : 
 
-- -k / --key : provide API key - optional
+- -k / --key : provide API key - optional (or set in environment variable meraki_apikey)
 - -o / --org : set an organization ID - optional
 - -n / --net : set a network ID - optional
 - -s / --span : set the time span (in days) - optional
