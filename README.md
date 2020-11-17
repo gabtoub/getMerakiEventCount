@@ -12,7 +12,7 @@ Displays count of an event type from Meraki Dashboard  on a defined time frame
 - -o / --org : set an organization ID - optional
 - -n / --net : set a network ID - optional
 - -s / --span : set the time span (in days) - optional
-- -t / --type : set event type - mandatory
+- -t / --type : set event type - mandatory (syslog notation)
 - -p / --product : set product type - mandatory
     
 ### Details :
@@ -32,6 +32,8 @@ Available product types  :
     wireless, appliance, switch, systemsManager, camera, cellularGateway,  environmental
 
 ## Examples : 
+Getting DFS Events count for all networks in Org ID 549236
+
     python getMerakiEventCount.py -p wireless -t dfs_event -o 549236
     
     Using default timespan : 1 day
