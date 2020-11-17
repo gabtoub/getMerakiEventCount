@@ -1,11 +1,12 @@
 # Get Meraki Events Count from Meraki Dashboard  - By Gabriel TOUBEAU (github.com/gabtoub)
 # Recommended for security reasons : set meraki_apikey environment variable
 
-import meraki
 import argparse
+import datetime
 import os
 import sys
-import datetime
+
+import meraki
 
 
 def session(apikey):
