@@ -4,20 +4,53 @@ Displays count of an event type from Meraki Dashboard  on a defined time frame
 ## Prerequisites
 
 - Meraki Dashboard API access , see documentation here : https://documentation.meraki.com/General_Administration/Other_Topics/The_Cisco_Meraki_Dashboard_API
-- Meraki Module installed (pip3 install meraki)
 
-## How to Use : 
+## Installation
 
-- -k / --key : provide API key - optional (or set in environment variable meraki_apikey)
+#### Clone the repo
+```
+$ git clone https://github.com/gabtoub/getMerakiEventCount.git
+```
+
+#### Set up a Python venv
+Python3 needs to be installed on the machine. 
+Creating a virtual environment is recommended. 
+
+##### Install virtualenv via pip
+```
+$ pip install virtualenv
+```
+
+##### Create a new virtual environment
+```
+Change to your project folder
+$ cd getMerakiEventCount
+
+Create virtual environment
+$ virtualenv venv
+
+Activate virtual environment
+$ source venv/bin/activate
+```
+
+#### Install dependencies
+```
+$ pip install -r requirements.txt
+```
+
+## How to Use 
+
+- -k / --key : provide API key - optional (or set in environment variable as meraki_apikey)
 - -o / --org : set an organization ID - optional
 - -n / --net : set a network ID - optional
 - -s / --span : set the time span (in days) - optional
 - -t / --type : set event type - mandatory (syslog notation)
 - -p / --product : set product type - mandatory
     
-### Details :
+### Details
 
-Default timespan : 1 day 
+Default time span : 1 day 
+
 If no Org ID is provided, the scripts displays the organizations available
 
     python getMerakiEventCount.py -p wireless
