@@ -1,1 +1,3 @@
-meraki~=1.2.0
+meraki~=1.3.0
+argparse~=1.4.0
+datetime~=4.3
