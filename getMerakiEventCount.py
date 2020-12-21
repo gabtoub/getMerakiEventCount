@@ -101,9 +101,10 @@ def main():
         if net:
             # Parsing one network only if a network ID is set
             product = prod
-            event_type = type
+            event_type = eventtype
             try:
                 event_count = getnbevents(s, net, product, event_type, timestamp)
+                print(f"Timespan : between {timedelta} and {timenow}")
                 print(f"Network : {net} , Number of {event_type} : {event_count}")
             except meraki.APIError:
                 print("API Error - check arguments")
